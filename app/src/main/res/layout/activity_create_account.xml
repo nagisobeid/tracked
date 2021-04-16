@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".CreateAccount">
+
+    <EditText
+        android:id="@+id/editTextUsername"
+        android:layout_width="266dp"
+        android:layout_height="47dp"
+        android:layout_marginBottom="12dp"
+        android:ems="10"
+        android:hint="username"
+        android:inputType="textPersonName"
+        app:layout_constraintBottom_toTopOf="@+id/editTextPassword"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.475"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <EditText
+        android:id="@+id/editTextPassword"
+        android:layout_width="266dp"
+        android:layout_height="47dp"
+        android:layout_marginBottom="16dp"
+        android:ems="10"
+        android:hint="password"
+        android:inputType="textPassword"
+        app:layout_constraintBottom_toTopOf="@+id/editTextPasswordVerify"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.475"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <EditText
+        android:id="@+id/editTextPasswordVerify"
+        android:layout_width="266dp"
+        android:layout_height="47dp"
+        android:layout_marginBottom="12dp"
+        android:ems="10"
+        android:hint="verify password"
+        android:inputType="textPassword"
+        app:layout_constraintBottom_toTopOf="@+id/buttonCreateAccountSubmit"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.475"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/textViewCreateAccount"
+        android:layout_width="282dp"
+        android:layout_height="48dp"
+        android:layout_marginBottom="16dp"
+        android:editable="false"
+        android:fontFamily="monospace"
+        android:text="Create Account"
+        android:textAlignment="center"
+        android:textColor="#34B40E"
+        android:textSize="30sp"
+        app:layout_constraintBottom_toTopOf="@+id/editTextUsername"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.496"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <Button
+        android:id="@+id/buttonCreateAccountSubmit"
+        android:layout_width="265dp"
+        android:layout_height="43dp"
+        android:layout_marginBottom="280dp"
+        android:onClick="onButtonCreateAccountSubmit"
+        android:text="create account"
+        app:backgroundTint="#64CF17"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.479"
+        app:layout_constraintStart_toStartOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
