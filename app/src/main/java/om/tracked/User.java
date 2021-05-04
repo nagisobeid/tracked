@@ -2,7 +2,7 @@ package om.tracked;
 
 import java.io.Serializable;
 
-public class User extends Location implements Serializable {
+public class User implements Serializable {
     // VARIABLES
     private String username;
     private String pw;

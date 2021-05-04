@@ -1,87 +1,79 @@
 package om.tracked;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.fragment.app.FragmentActivity;
 
 import android.Manifest;
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.location.Address;
 import android.location.Criteria;
+import android.location.Geocoder;
 import android.location.Location;
+import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
-import android.os.Message;
-import android.util.Log;
-import android.view.View;
-import android.view.WindowManager;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
+import android.widget.Toast;
 
+import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
-import static om.tracked.MapsActivity.MY_PERMISSIONS_REQUEST_LOCATION;
+public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
-public class Home extends AppCompatActivity{
-    //Group group = new Group();
-    User user = new User();
-    FirebaseFirestore db = FirebaseFirestore.getInstance();
-    private static final String TAG = MainActivity.class.getSimpleName();
-    private ArrayList<String> groups = new ArrayList<String>();
-    private ListView listView;
-    private ArrayAdapter<String> adapter;
-    LocationManager locationManager;
-    String provider;
-    Location loc;
+    private GoogleMap mMap;
     private FusedLocationProviderClient fusedLocationClient;
     public static final int MY_PERMISSIONS_REQUEST_LOCATION = 99;
+    LocationManager locationManager;
+    String provider;
+    private double lat;
+    private double lon;
+    String member;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getSupportActionBar().hide();
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-                WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        setContentView(R.layout.activity_home);
-
-        //Loc loc = new Loc(db, user);
-
+        setContentView(R.layout.activity_maps);
+        Intent i = getIntent();
+        member = (String) i.getSerializableExtra("member");
+        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.map);
+        mapFragment.getMapAsync(this);
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        System.out.println(locationManager.getAllProviders());
         provider = locationManager.getBestProvider(new Criteria(), false);
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
         checkLocationPermission();
-        //new Thread(new Loc(db, user, loc)).start();
+    }
 
-        Intent i = getIntent();
-        user = (User)i.getSerializableExtra("user");
-        listView = (ListView) findViewById(R.id.listViewGroups);
-        adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, groups);
-        listView.setAdapter(adapter);
-        //
+    /**
+     * Manipulates the map once available.
+     * This callback is triggered when the map is ready to be used.
+     * This is where we can add markers or lines, add listeners or move the camera. In this case,
+     * we just add a marker near Sydney, Australia.
+     * If Google Play services is not installed on the device, the user will be prompted to install
+     * it inside the SupportMapFragment. This method will only be triggered once the user has
+     * installed Google Play services and returned to the app.
+     */
+
+
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        mMap = googleMap;
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // TODO: Consider calling
             //    ActivityCompat#requestPermissions
@@ -98,58 +90,17 @@ public class Home extends AppCompatActivity{
                     public void onSuccess(Location location) {
                         // Got last known location. In some rare situations this can be null.
                         if (location != null) {
-                            loc = location;
-                            new Thread(new Loc(db, user, loc)).start();
+                            System.out.println("SUCCESS------------------------------------SUCCESS");
+                            System.out.println(location);
+                            lat = location.getLatitude();
+                            lon = location.getLongitude();
+                            LatLng loc = new LatLng(lat, lon);
+                            mMap.addMarker(new MarkerOptions().position(loc).title(member + "'s Location"));
+
+                            mMap.moveCamera(CameraUpdateFactory.newLatLng(loc));
                         }
                     }
                 });
-        //
-        //
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener()
-        {
-            @Override
-            public void onItemClick(AdapterView<?> adapter, View v, int position,
-                                    long arg3)
-            {
-                //String group = (String)adapter.getItemAtPosition(position);
-                Group group = new Group();
-                group.setgName((String)adapter.getItemAtPosition(position));
-                //System.out.println(value);
-                Intent i = new Intent(Home.this, GroupHome.class);
-                i.putExtra("group", group);
-                startActivity(i);
-            }
-        });
-
-        displayGroups();
-    }
-
-    public void displayGroups() {
-        db.collection("group")
-                .get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if (task.isSuccessful()) {
-                            for (QueryDocumentSnapshot document : task.getResult()) {
-                                Log.d(TAG, document.getId() + " => " + document.getData());
-                                ArrayList<String> list = (ArrayList<String>) document.get("members");
-                                for (String member : list) {
-                                    System.out.println(member);
-                                    if(member.equals(user.getUsername())) {
-                                        groups.add(document.getString("name"));
-                                        adapter.notifyDataSetChanged();
-                                    }
-                                }
-                            }
-                        } else {
-                            Log.w(TAG, "Error getting documents.", task.getException());
-                        }
-                    }
-                });
-
-        //adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, groups);
-        //listView.setAdapter(adapter);
     }
 
     public boolean checkLocationPermission() {
@@ -171,7 +122,7 @@ public class Home extends AppCompatActivity{
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
                                 //Prompt the user once explanation has been shown
-                                ActivityCompat.requestPermissions(Home.this,
+                                ActivityCompat.requestPermissions(MapsActivity.this,
                                         new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                                         MY_PERMISSIONS_REQUEST_LOCATION);
                             }
@@ -192,4 +143,36 @@ public class Home extends AppCompatActivity{
         }
     }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case MY_PERMISSIONS_REQUEST_LOCATION: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+                    // permission was granted, yay! Do the
+                    // location-related task you need to do.
+                    if (ContextCompat.checkSelfPermission(this,
+                            Manifest.permission.ACCESS_FINE_LOCATION)
+                            == PackageManager.PERMISSION_GRANTED) {
+                        System.out.println("PERMISSION GRANTED**************************");
+                        System.out.println(locationManager.getLastKnownLocation(provider));
+                        //Request location updates:
+                        //locationManager.requestLocationUpdates(provider, 400, 1, this);
+                        //locationManager.requestLocationUpdates(provider, 400, 1, this);
+                    }
+
+                } else {
+
+                    // permission denied, boo! Disable the
+                    // functionality that depends on this permission.
+
+                }
+                return;
+            }
+
+        }
+    }
 }

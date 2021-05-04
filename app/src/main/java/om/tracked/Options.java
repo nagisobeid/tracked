@@ -29,5 +29,8 @@ public class Options extends AppCompatActivity {
     }
 
     public void onJoinGroupClicked(View view) {
+        Intent jg = new Intent(Options.this, JoinGroup.class);
+        jg.putExtra("user", user);
+        startActivity(jg);
     }
 }
