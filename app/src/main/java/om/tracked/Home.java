@@ -79,7 +79,8 @@ public class Home extends AppCompatActivity{
         Intent i = getIntent();
         user = (User)i.getSerializableExtra("user");
         listView = (ListView) findViewById(R.id.listViewGroups);
-        adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, groups);
+        //adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, groups);
+        adapter = new ArrayAdapter<String>(Home.this, R.layout.custom_lv, groups);
         listView.setAdapter(adapter);
         //
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {

@@ -41,7 +41,7 @@ public class GroupHome extends AppCompatActivity {
         Intent i = getIntent();
         group = (Group) i.getSerializableExtra("group");
         listView = (ListView) findViewById(R.id.listViewMembers);
-        adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, members);
+        adapter = new ArrayAdapter<String>(this, R.layout.custom_lv, members);
         listView.setAdapter(adapter);
         //
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener()

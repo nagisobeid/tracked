@@ -1,5 +1,6 @@
 package om.tracked;
 
+import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
@@ -17,6 +18,7 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -28,8 +30,14 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
@@ -37,6 +45,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private GoogleMap mMap;
     private FusedLocationProviderClient fusedLocationClient;
     public static final int MY_PERMISSIONS_REQUEST_LOCATION = 99;
+    FirebaseFirestore db = FirebaseFirestore.getInstance();
     LocationManager locationManager;
     String provider;
     private double lat;
@@ -47,17 +56,42 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_maps);
+        //setContentView(R.layout.activity_maps);
         Intent i = getIntent();
         member = (String) i.getSerializableExtra("member");
+        //
+        db.collection("user")
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                //Log.d(TAG, document.getId() + " => " + document.getData());
+                                if(document.get("username").equals(member)) {
+                                    //ArrayList<String> list = (ArrayList<String>) document.get("members");
+                                    System.out.println("USER FOUND <------->" + document.get("username"));
+                                    lat = (double)document.get("lat");
+                                    lon = (double)document.get("lon");
+                                    System.out.println("USER LAT <------->" + lat);
+                                    System.out.println("USER LON <------->" + lon);
+                                }
+                            }
+                        } else {
+                            //Log.w(TAG, "Error getting documents.", task.getException());
+                        }
+                    }
+                });
+        //
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
+        setContentView(R.layout.activity_maps);
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
-        locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        /*locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         provider = locationManager.getBestProvider(new Criteria(), false);
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
-        checkLocationPermission();
+        checkLocationPermission();*/
     }
 
     /**
@@ -74,7 +108,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        LatLng loc = new LatLng(lat, lon);
+        mMap.addMarker(new MarkerOptions().position(loc).title(member + "'s Location"));
+
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(loc));
+        /*if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // TODO: Consider calling
             //    ActivityCompat#requestPermissions
             // here to request the missing permissions, and then overriding
@@ -100,9 +138,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             mMap.moveCamera(CameraUpdateFactory.newLatLng(loc));
                         }
                     }
-                });
+                });*/
     }
-
+    /*
     public boolean checkLocationPermission() {
         if (ContextCompat.checkSelfPermission(this,
                 Manifest.permission.ACCESS_FINE_LOCATION)
@@ -142,7 +180,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             return true;
         }
     }
+    */
 
+    /*
     @Override
     public void onRequestPermissionsResult(int requestCode,
                                            String permissions[], int[] grantResults) {
@@ -174,5 +214,5 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
 
         }
-    }
+    }*/
 }

@@ -35,13 +35,14 @@
         app:layout_constraintVertical_bias="0.023" />
 
     <ImageView
-        android:id="@+id/imageView3"
-        android:layout_width="322dp"
-        android:layout_height="237dp"
-        android:layout_marginTop="44dp"
+        android:id="@+id/imageView2"
+        android:layout_width="260dp"
+        android:layout_height="92dp"
+        android:layout_marginTop="92dp"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.496"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@mipmap/logo_tracked" />
+        app:srcCompat="@drawable/tracked_logo" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

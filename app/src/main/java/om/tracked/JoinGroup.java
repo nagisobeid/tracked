@@ -40,7 +40,7 @@ public class JoinGroup extends AppCompatActivity {
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_join_group);
         listView = (ListView) findViewById(R.id.listViewGroups);
-        adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, groups);
+        adapter = new ArrayAdapter<String>(this, R.layout.custom_lv, groups);
         listView.setAdapter(adapter);
 
         Intent i = getIntent();

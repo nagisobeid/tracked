@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/customlv"
+    android:textColor="#39de33"
+    android:textSize="25dp"
+    android:fontFamily="sans-serif-medium"
+    android:layout_width="fill_parent"
+    android:gravity="left"
+    android:layout_height="fill_parent"
+    android:paddingLeft="15dp"
+    android:paddingBottom="10dp"
+    android:paddingTop="10dp"
+    />
